@@ -1,0 +1,42 @@
+<div class="weui-panel weui-panel_access">
+    <div class="weui-panel__hd" ng-click="showActionSheet()">排序</div>
+    <div class="weui-panel__bd">
+        <a href="#/detail/{{new.id}}" class="weui-media-box weui-media-box_appmsg" ng-repeat="new in news|filter:{title:searchName}|orderBy:'id':sort">
+            <div class="weui-media-box__hd" ng-show="new.image?true:false">
+                <img class="weui-media-box__thumb" ng-src="{{new.image}}" alt="">
+            </div>
+            <div class="weui-media-box__bd">
+                <h4 class="weui-media-box__title">{{new.title}}</h4>
+                <p class="weui-media-box__desc">{{new.text}}</p>
+            </div>
+        </a>
+    </div>
+    <div class="weui-panel__ft" ng-show="isLoadMore">
+        <a href="javascript:void(0);" class="weui-cell weui-cell_access weui-cell_link" ng-click="loadMore()">
+            <div class="weui-cell__bd">查看更多</div>
+            <span class="weui-cell__ft"></span>
+        </a>    
+    </div>
+</div>
+
+<div ng-hide="isLoadMore">
+    <div class="weui-loadmore">
+        <i class="weui-loading"></i>
+        <span class="weui-loadmore__tips">正在加载</span>
+    </div>
+    <div class="weui-loadmore weui-loadmore_line">
+        <span class="weui-loadmore__tips">暂无数据</span>
+    </div>
+    <div class="weui-loadmore weui-loadmore_line weui-loadmore_dot">
+        <span class="weui-loadmore__tips"></span>
+    </div>
+</div>
+
+
+<div id="loadingToast" style="display:{{isLoadMore?'none':'block'}};">
+    <div class="weui-mask_transparent"></div>
+    <div class="weui-toast">
+        <i class="weui-loading weui-icon_toast"></i>
+        <p class="weui-toast__content">数据加载中</p>
+    </div>
+</div>

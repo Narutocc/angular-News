@@ -1,0 +1,13 @@
+<div id="actionSheet_wrap">
+    <!-- z-index的层高会影响交互，ng-if来操作这个遮罩层是否从DOM结构中添加进来 -->
+    <div class="weui-mask_transparent actionsheet__mask" id="mask" ng-if="isShowActionSheet"></div>
+    <div class="weui-skin_android" id="weui-android-actionsheet" style="display: {{isShowActionSheet?'block':'none'}}">
+        <div class="weui-mask" ng-click="hideActionSheet()"></div>
+        <div class="weui-actionsheet">
+            <div class="weui-actionsheet__menu">
+                <div class="weui-actionsheet__cell" ng-click="sort=false;isShowActionSheet=false">升序</div>
+                <div class="weui-actionsheet__cell" ng-click="sort=true;isShowActionSheet=false">降序</div>
+            </div>
+        </div>
+    </div>
+</div>

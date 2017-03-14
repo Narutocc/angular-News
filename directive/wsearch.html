@@ -1,0 +1,17 @@
+<!-- 改变isSearch布尔值，就可以添加类，从而改变搜索框的状态 -->
+<div class="weui-search-bar {{isSearch?'weui-search-bar_focusing':''}}" id="search_bar">
+    <form class="weui-search-bar__form">
+        <div class="weui-search-bar__box">
+            <i class="weui-icon-search"></i>
+            <!-- 获得焦点，出现搜索框 -->
+            <input type="search" class="weui-search-bar__input" id="search_input" placeholder="搜索" ng-focus="search()" ng-model="searchName"/>
+            <a href="javascript:" class="weui-icon-clear" id="search_clear" ng-click="cancel()"></a>
+        </div>
+        <label for="search_input" class="weui-search-bar__label" id="search_text">
+            <i class="weui-icon-search"></i>
+            <span>搜索</span>
+        </label>
+    </form>
+    <!-- 点击的时候改变状态 -->
+    <a href="javascript:" class="weui-search-bar__cancel-btn" id="search_cancel" ng-click="cancel()">取消</a>
+</div>

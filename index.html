@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="newsApp">
+<head>
+	<meta charset="UTF-8">
+	<!-- 移动端必备 -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>news</title>
+	<!-- 引入weui样式 -->
+	<link rel="stylesheet" href="css/weui.css">
+	<!-- 引入轮播图样式 -->
+	<link rel="stylesheet" href="css/swiper.css">
+</head>
+<body>
+	<div ui-view=""></div>
+</body>
+<!-- 引入angular -->
+<script src="js/angular.js"></script>
+<!-- 引入ui路由 -->
+<script src="js/angular-ui-router.js"></script>
+<!-- 引入轮播图插件 -->
+<script src="js/swiper.js"></script>
+
+<!-- ng-post -->
+<script src="js/ng-post.js"></script>
+<script>
+	var app = angular.module('newsApp',['ng.post','routers','controllers','directives','services']);
+
+	var routers = angular.module('routers',['ui.router']);
+	// 配置路由
+	routers.config(['$stateProvider','$urlRouterProvider',function($stateProvider,$urlRouterProvider){
+		$stateProvider.state('index',{
+			url:'/index',
+			controller:'indexCtrl',
+			templateUrl:'template/index.html'
+		}).state('index.recommend',{
+			url:'/recommend/:id',
+			controller:'recommendCtrl',
+			templateUrl:'template/recommend.html'
+		}).state('index.hot',{
+			url:'/hot/:id',
+			templateUrl:'template/hot.html'
+		}).state('index.entertainment',{
+			url:'/entertainment/:id',
+			templateUrl:'template/entertainment.html'
+		}).state('detail',{
+			url:'/detail/:id',
+			controller:'detailCtrl',
+			templateUrl:'template/detail.html'
+		}).state('login',{
+			url:'/login',
+			controller:'loginCtrl',
+			templateUrl:'template/login.html'
+		})
+		//默认进入的路由页面
+		 $urlRouterProvider.when('','/index/recommend/6')
+	}]).run(['$http','cookie','$window',function($http,cookie,$window){
+		$http.post('http://10.16.155.28:81/news/php/index.php/login_api/auto_login',{
+			params:{
+				username:cookie.getCookie('username'),
+				token:cookie.getCookie('token')
+			}
+		}).success(function(data){
+			console.log(data)
+			if(data){
+				// success
+			}else{
+				$window.location.href = '#/login'
+			}
+		})
+	}])
+
+	// 控制器模块
+	var controllers = angular.module('controllers',[]);
+	controllers.controller('indexCtrl',['$scope','$http','cookie','$window',function($scope,$http,cookie,$window){
+		// 频道接口的信息
+		$http.get('http://10.16.155.28:81/news/php/index.php/news_api/get_channel').success(function(data){
+			console.log(data);
+			$scope.channels = data;
+		})
+		$scope.tabs = 1;
+		$scope.changeTab = function(tabs){
+			$scope.tabs = tabs;
+			// $window.location.href = '#/index/hot/7'
+		}
+	}]).controller('recommendCtrl',['$scope','$http','$state',function($scope,$http,$state){
+		// 搜索框的默认状态
+		$scope.isSearch = false;
+		$scope.search = function(){
+			$scope.isSearch = true;
+		}
+		$scope.cancel = function(){
+			$scope.isSearch = false;
+			$scope.searchName = '';
+		}
+
+		// 默认的排序
+		$scope.sort = true;
+		
+		// 搜索框默认为空
+		$scope.searchName = '';
+
+		// 请求新闻数据
+		// 默认请求第一页
+		$scope.page = 1;
+		$scope.news = [];
+		// 默认查看更多是隐藏状态
+		$scope.isLoadMore = false;
+		$scope.loadMore = function(){
+			// 点击查看更多获取数据的时候，也要隐藏，直到数据完全加载才继续出现
+			$scope.isLoadMore = false;
+			// 请求新闻列表数据
+			$http.get('http://10.16.155.28:81/news/php/index.php/news_api/show_detail_by_channel_id',{
+				params:{
+					// 没点击加载更多，就向接口请求下一页的数据
+					page:$scope.page++,
+					// 要请求的频道id
+					channel_id:$state.params.id
+				}
+			}).success(function(data){
+				console.log(data);
+				// 每请求一次接口，就往$scope.news新闻列表数组添加新的新闻数据
+				$scope.news = $scope.news.concat(data.news_list);
+
+				// 改变查看更多的状态，如果请求成功则变为true
+				$scope.isLoadMore = true;
+			})
+		}
+		// 第一次进入页面的时候加载数据
+		$scope.loadMore();
+
+		// 遮罩层
+		$scope.isShowActionSheet = false;
+		$scope.showActionSheet = function(){
+			$scope.isShowActionSheet = true;
+		}
+		$scope.hideActionSheet = function(){
+			$scope.isShowActionSheet = false;
+		}
+	}]).controller('detailCtrl',['$scope','$http','$state','$window',function($scope,$http,$state,$window){
+		console.log($state.params.id);
+		$http.get('js/show_detail.json',{
+			params:{
+				id:'$state.params.id'
+			}
+		}).success(function(data){
+			console.log(data);
+			$scope.new = data.news_list[0];
+			
+		})
+
+		// 预览图片的默认状态
+		$scope.isGallery = false;
+		// 预览图片默认为空
+		$scope.imgUrl = '';
+
+		$scope.gallery = function(imgUrl){
+			$scope.isGallery = true;
+			$scope.imgUrl = imgUrl;
+		}
+	}]).controller('loginCtrl',['$scope','$http','cookie','$window',function($scope,$http,cookie,$window){
+		$scope.register = function(){
+			$http.post('http://10.16.155.28:81/news/php/index.php/login_api/register',{
+				params:{
+					username:$scope.username,
+					password:$scope.password
+				}
+			}).success(function(data){
+				console.log(data)
+			})
+		}
+		$scope.submit = function(){
+			// console.log($scope.username);
+			// console.log($scope.password);
+			$http.post('http://10.16.155.28:81/news/php/index.php/login_api/login',{
+				params:{
+					username:$scope.username,
+					password:$scope.password
+				}
+			}).success(function(data){
+				cookie.setCookie('username',data.user_name);
+				cookie.setCookie('token',data.info.token);
+				$window.location.href = '#/index/recommend/6'
+			})
+		}
+	}])
+
+	// 服务的模块
+	var services = angular.module('services',[]);
+	services.service('cookie',['$document',function($document){
+		return {
+			setCookie: function(name, value) {
+			var days = 10;
+			var ex = new Date();
+			ex.setTime(ex.getTime() + days * 24 * 60 * 60 * 1000);
+			$document[0].cookie = name + "=" + value + ";expires=" + ex;
+			},
+			getCookie: function(name) {
+				var a;
+				var reg = new RegExp("(^|)" + name + "=([^;]*)(;|$)");
+				if(a = $document[0].cookie.match(reg)) {
+					return a[2];
+				}
+			}
+		}
+	}])
+
+	// 组件模块
+	var directives = angular.module('directives',[]);
+	directives.directive('wheader',function(){
+		return {
+			templateUrl:'directive/wheader.html'
+		}
+	}).directive('wsearch',function(){
+		return {
+			templateUrl:'directive/wsearch.html'
+		}
+	}).directive('wpanel',function(){
+		return {
+			templateUrl:'directive/wpanel.html'
+		}
+	}).directive('wactionsheet',function(){
+		return {
+			templateUrl:'directive/wactionsheet.html'
+		}
+	}).directive('wcarousel',function(){
+		return {
+			templateUrl:'directive/wcarousel.html',
+			link:function(scope,ele,attr){
+				 var swiper = new Swiper('.swiper-container', {
+			        pagination: '.swiper-pagination',
+			        paginationClickable: true
+			    });
+			}
+		}
+	})
+</script>
+</html>

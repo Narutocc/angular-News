@@ -1,0 +1,32 @@
+<div class="weui-tab">
+     <div class="weui-navbar weui-fixed">
+         <div class="weui-navbar__item" ng-class="{'weui-bar__item_on':tabs==1}" ng-repa>
+            <a href="#/index/recommend/4" ng-click="changeTab(1)">{{channels[0].channel}}</a>
+         </div>
+        <div class="weui-navbar__item" ng-class="{'weui-bar__item_on':tabs==2}">
+            <a href="#/index/hot/7" ng-click="changeTab(2)">热点</a>
+        </div>
+              <div class="weui-navbar__item" ng-class="{'weui-bar__item_on':tabs==3}">
+            <a href="#/index/entertainment/8" ng-click="changeTab(3)">娱乐</a>
+        </div>
+    </div>
+    <div class="weui-tab__panel">
+    </div>
+</div>
+
+
+<!-- <div class="weui-tab">
+     <div class="weui-navbar weui-fixed">
+         <div class="weui-navbar__item" ng-class="{'weui-bar__item_on':tabs=={{a.id}}}" ng-repeat="a in channels" ng-click="changeTab(a.id)">{{a.channel}}
+            <!-- <a href="#/index/recommend/4" ></a> -->
+        <!--  </div>
+        <div class="weui-navbar__item" ng-class="{'weui-bar__item_on':tabs==2}">
+            <a href="#/index/hot/7" ng-click="changeTab(2)">热点</a>
+        </div>
+              <div class="weui-navbar__item" ng-class="{'weui-bar__item_on':tabs==3}">
+            <a href="#/index/entertainment/8" ng-click="changeTab(3)">娱乐</a>
+        </div>
+    </div>
+    <div class="weui-tab__panel">
+    </div> -->
+<!-- </div> -->
